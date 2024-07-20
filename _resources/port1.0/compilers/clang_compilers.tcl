@@ -12,7 +12,8 @@ if {${os.platform} eq "darwin" && [option configure.build_arch] in [list ppc ppc
     return
 }
 
-if {${os.major} >= 11 || ${compiler.cxx_standard} >= 2020 || ${os.platform} ne "darwin"} {
+# Clang 17+ (currently) only available on Darwin11 and newer
+if {${os.major} >= 11 || ${os.platform} ne "darwin"} {
     if {${os.major} >= 22 || ${os.platform} ne "darwin"} {
         # For now limit exposure of clang-18+ to macOS13+ due to issues like
         # https://github.com/macports/macports-ports/pull/21051
@@ -26,6 +27,9 @@ if {${os.major} >= 11 || ${compiler.cxx_standard} >= 2020 || ${os.platform} ne "
         # Limit clang 17 to c++14 or newer
         lappend compilers macports-clang-17
     }
+}
+
+if {${os.major} >= 10 || ${os.platform} ne "darwin"} {
     lappend compilers macports-clang-16 \
                       macports-clang-15 \
                       macports-clang-14
@@ -33,6 +37,7 @@ if {${os.major} >= 11 || ${compiler.cxx_standard} >= 2020 || ${os.platform} ne "
         # https://trac.macports.org/ticket/68257
         # Versions of clang older than clang-14 probably have build issues on
         # macOS14+. Until resolved do not append to fallback list.
+        # Unlikely they will ever really be needed here though.
         lappend compilers macports-clang-13 \
                           macports-clang-12
     }
