@@ -1,0 +1,57 @@
+diff --git a/compiler-rt/lib/sanitizer_common/sanitizer_mac.cpp b/compiler-rt/lib/sanitizer_common/sanitizer_mac.cpp
+index d15f30c61b58..e1dee36129a0 100644
+--- a/compiler-rt/lib/sanitizer_common/sanitizer_mac.cpp
++++ b/compiler-rt/lib/sanitizer_common/sanitizer_mac.cpp
+@@ -71,9 +71,9 @@ extern char ***_NSGetArgv(void);
+ #  include <mach/mach_time.h>
+ #  include <mach/vm_statistics.h>
+ #  include <malloc/malloc.h>
+-#  include <os/log.h>
++// #  include <os/log.h>
+ #  include <pthread.h>
+-#  include <pthread/introspection.h>
++//#  include <pthread/introspection.h>
+ #  include <sched.h>
+ #  include <signal.h>
+ #  include <spawn.h>
+@@ -780,7 +780,7 @@ void WriteOneLineToSyslog(const char *s) {
+ #if !SANITIZER_GO
+   syslog_lock.CheckLocked();
+   if (GetMacosAlignedVersion() >= MacosVersion(10, 12)) {
+-    os_log_error(OS_LOG_DEFAULT, "%{public}s", s);
++    //os_log_error(OS_LOG_DEFAULT, "%{public}s", s);
+   } else {
+ #pragma clang diagnostic push
+ // as_log is deprecated.
+@@ -1416,12 +1416,13 @@ void InitializePlatformCommonFlags(CommonFlags *cf) {}
+ //   threads, are delivered on the parent.  We use this to tell apart which
+ //   threads are GCD workers with `thread == pthread_self()`.
+ //
+-static pthread_introspection_hook_t prev_pthread_introspection_hook;
+-static ThreadEventCallbacks thread_event_callbacks;
++//static pthread_introspection_hook_t prev_pthread_introspection_hook;
++//static ThreadEventCallbacks thread_event_callbacks;
+ 
+ static void sanitizer_pthread_introspection_hook(unsigned int event,
+                                                  pthread_t thread, void *addr,
+                                                  size_t size) {
++  /*
+   // create -> start -> terminate -> destroy
+   // * create/destroy are usually (not guaranteed) delivered on the parent and
+   //   track resource allocation/reclamation
+@@ -1452,12 +1453,15 @@ static void sanitizer_pthread_introspection_hook(unsigned int event,
+     if (thread_event_callbacks.destroy)
+       thread_event_callbacks.destroy((uptr)thread);
+   }
++  */
+ }
+ 
+ void InstallPthreadIntrospectionHook(const ThreadEventCallbacks &callbacks) {
++  /*
+   thread_event_callbacks = callbacks;
+   prev_pthread_introspection_hook =
+       pthread_introspection_hook_install(&sanitizer_pthread_introspection_hook);
++  */
+ }
+ 
+ }  // namespace __sanitizer

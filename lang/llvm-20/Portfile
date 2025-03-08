@@ -203,6 +203,12 @@ if {${os.platform} eq "darwin" && ${os.major} <= 16} {
     patchfiles-append 0042-mbstate_t-not-defined.patch
 }
 
+if {${os.platform} eq "darwin" && ${os.major} <= 14} {
+    # no os/log.h on MacOS10.10 and older
+    # no <pthread/introspection.h on older OSes
+    patchfiles-append 0043-sanaitizer_mac-old-os-fixes.patch
+}
+
 post-patch {
     reinplace "s|@@PREFIX@@|${prefix}|" \
         ${patch.dir}/clang/lib/Driver/ToolChains/Clang.cpp \
