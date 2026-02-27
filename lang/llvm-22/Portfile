@@ -127,6 +127,13 @@ platform darwin {
 patch.dir ${workpath}/${distname}
 patch.pre_args-replace  -p0 -p1
 
+if {${os.platform} eq "darwin" && ${os.major} < 19} {
+    # libcxx/src/include/aligned_alloc.h:44:12: error: no member named 'aligned_alloc' in the global namespace
+    configure.cppflags-prepend -fno-aligned-new
+    configure.args-append -DLIBCXX_ADDITIONAL_COMPILE_FLAGS="\-fno-aligned-new"
+    configure.args-append -DLIBCXXABI_ADDITIONAL_COMPILE_FLAGS="\-fno-aligned-new"
+}
+
 patchfiles-append \
     0001-MacPorts-only-clang-use-MP-omp-locations.patch \
     0002-MacPorts-Only-Don-t-embed-the-deployment-target-in-t.patch \
@@ -266,7 +273,7 @@ if { ${subport} eq "clang-${llvm_version}" } {
 
     depends_run-append  port:clang_select-${llvm_version} port:cctools
 
-    platforms           {darwin >= 19}
+    platforms           {darwin >= 16}
 
     configure.args-append \
         -DLLVM_ENABLE_PROJECTS="clang\;clang-tools-extra\;lld" \
